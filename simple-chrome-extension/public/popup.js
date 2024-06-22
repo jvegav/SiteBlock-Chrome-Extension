@@ -30,10 +30,7 @@ switch (window.location.hostname){
         document.body.innerHTML = generateHTML();
         document.head.innerHTML = generateStyle();
         break;
-    case "www.youtube.com":
-        document.body.innerHTML = generateHTML();
-        document.head.innerHTML = generateStyle();
-        break;
+    
     
     
         

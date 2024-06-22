@@ -9,6 +9,9 @@
     ],
     "icons": {
         "48" : "calendario.png"
+    },
+    "action" :{
+        "default_popup" :"index.html"
     }
 
 }
