@@ -5,19 +5,23 @@ import { useEffect, useState } from 'react';
 
 function App() {
  
-  const [ tabs, setTabs] = useState(()=>{
-    const localValue = localStorage.getItem("TABS");
-    if(localValue ===null) return []
-    return JSON.parse(localValue)
-  })
+  const [ tabs, setTabs] = useState([])
 
 
   useEffect(() => {
-    localStorage.setItem("TABS", JSON.stringify(tabs))
-  },[tabs])
+    chrome.storage.local.get(['blockedURLS'], function(result) {
+      if(result.blockedURLS) {
+        setTabs(result.blockedURLS)
+      }
+    })
+  },[])
 
 
   const[newURL, setNewURL] =  useState("")
+
+
+
+
 
   const onClick = () => {
 
@@ -26,13 +30,23 @@ function App() {
 
   function addURL(event){
     event.preventDefault()
-    setTabs(prevTabs => [...prevTabs, {id: crypto.randomUUID(),url:newURL}])
+    const updatedTabs = [...tabs, {id: crypto.randomUUID(),url:newURL}]
+    setTabs(updatedTabs)
     setNewURL("")
+
+
+    chrome.storage.local.set({blockedURLS :updatedTabs},function(){
+      chrome.runtime.sendMessage({action : "updateBlockedURLS"})
+    })
   }
 
   const deleteURL = (id) => {
-    setTabs(currentTabs => {
-      return currentTabs.filter(tab => tab.id !== id);
+
+    const newTabs = tabs.filter(tab => tab.id !== id)
+    setTabs(newTabs)
+
+    chrome.storage.local.set({blockedURLS :  newTabs}, function(){
+      chrome.runtime.sendMessage({action : "updateBlockedURLS"})
     })
   }
 
@@ -71,7 +85,6 @@ function App() {
       
       <ul id="blockedList" >
         {tabs.map((tab) => (
-          
           <li className='text-xl font-bold mt-2' key={tab.id}>
             {tab.url}
             
