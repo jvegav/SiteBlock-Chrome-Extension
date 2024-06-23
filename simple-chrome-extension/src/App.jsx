@@ -23,8 +23,24 @@ function App() {
 
 
 
-  const onClick = () => {
+  const blockSites = ()=> {
+    chrome.runtime.sendMessage({ action: "updateBlockedURLS" });
+  }
 
+  const unblockSites = () => {
+    chrome.declarativeNetRequest.getDynamicRules((existingRules) => {
+      const existingRuleIds = existingRules.map(rule => rule.id);
+      chrome.declarativeNetRequest.updateDynamicRules({
+        removeRuleIds: existingRuleIds,
+        addRules: []
+      }, () => {
+        if (chrome.runtime.lastError) {
+          console.error("Error removing rules:", chrome.runtime.lastError);
+        } else {
+          console.log('All rules removed successfully');
+        }
+      });
+    });
   }
 
 
@@ -64,8 +80,11 @@ function App() {
 
 
       <div className="card">
-        <button  id='myButton' className='button' onClick={onClick}>
+        <button  id='myButton' className='button' onClick={blockSites}>
           Block Sites
+        </button>
+        <button  id='myButton' className='button' onClick={unblockSites}>
+          UnBlock Sites
         </button>
       </div>
 
