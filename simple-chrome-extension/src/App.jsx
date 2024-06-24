@@ -1,61 +1,67 @@
-import blockit_logo from './assets/logo_blockit.png'
-import './App.css'
-import { useEffect, useState } from 'react';
 
+import { useEffect, useState } from 'react';
+import './App.css'
 import useAlert from './hooks/useAlert';
-import Alert from './components/Alert';
+import Logo from './components/Logo';
+import BlockBar from './components/BlockBar';
+import Form from './components/Form';
+import List from './components/List';
+import Blocked from './components/Blocked';
 
 function App() {
- 
+
   const [ tabs, setTabs] = useState([])
 
-  const {alert, showAlert, hideAlert} = useAlert();
+  const [blocked, setBlocked] = useState(false)
 
-  const[newURL, setNewURL] =  useState("")
-
+  const[addUrl, setAddUrl] = useState(false);
 
   useEffect(() => {
-    chrome.storage.local.get(['blockedURLS'], function(result) {
+    chrome.storage.local.get(['blocked','blockedURLS'], function(result) {
+      if (result.blocked !== undefined) {
+        setBlocked(result.blocked);
+      }
       if(result.blockedURLS) {
         setTabs(result.blockedURLS)
       }
     })
   },[])
 
+  useEffect(() => {
+    chrome.storage.local.set({ blocked });
+  }, [blocked]);
+
+
+
   function blockSites (value) {
     chrome.runtime.sendMessage({ action: "toggleBlocking",value });
-    showAlert({show:true, text: 'Sites Blocked', type: 'success'})
+    setBlocked(true)
     
-    setTimeout(()=>{
-      hideAlert();
-    },2000)
   }
+
+
 
   function unblockSites (value) {
     
     chrome.runtime.sendMessage({ action: "toggleBlocking",value });
-    showAlert({show:true, text: 'Sites UnBlocked', type: 'success'})
+    setBlocked(false)
     
-    setTimeout(()=>{
-      hideAlert();
-    },2000)
   }
 
 
-  function addURL(event){
-    event.preventDefault()
+
+  function addURL(newURL){
     const updatedTabs = [...tabs, {id: crypto.randomUUID(),url:newURL}]
     setTabs(updatedTabs)
-    setNewURL("")
-
 
     chrome.storage.local.set({blockedURLS :updatedTabs},function(){
       chrome.runtime.sendMessage({action : "updateBlockedURLS"})
     })
   }
 
-  const deleteURL = (id) => {
 
+
+  const deleteURL = (id) => {
     const newTabs = tabs.filter(tab => tab.id !== id)
     setTabs(newTabs)
 
@@ -64,58 +70,34 @@ function App() {
     })
   }
 
+  const handleAddUrl = () =>{
+    setAddUrl(!addUrl)
+  }
+
 
   return (
     <>
-      <div className='flex justify-center'>
-       
-        <img src={blockit_logo} className="logo blockit w-[150px] h-[150px]" alt="BlockIt logo" />
-        
-      </div>
+      <Logo/>
 
+      <h1 className='font-mono text-center'>BlockIt</h1>
 
-      <h1 className='font-mono'>BlockIt</h1>
+      
+      <Blocked
+      blocked={blocked}/>
 
-      {alert.show && <Alert {...alert}/>}
+      <BlockBar
+      blockSites={blockSites}
+      unblockSites={unblockSites}/>
 
-
-      <div className="card pt-16">
-        <button  id='myButton' className='button' onClick={() => blockSites(true)}>
-          Block Sites
-        </button>
-        <button  id='myButton' className='button ml-3' onClick={() => unblockSites(false)}>
-          UnBlock Sites
-        </button>
-      </div>
-
-
-
-      <div className='pb-8'>
-        <p className='text-sm font-mono pb-3 justify-items-start'> Write the URL ('youtube.com')</p>
-        <form id="blockForm" onSubmit={addURL}>
-          <div className='pb-4'>
-            <input value={newURL} type="text" id="url" onChange={e => setNewURL(e.target.value)} placeholder='URL Here'required className='justify-center items-center text-center rounded-lg h-10 w-full '/>
-          </div>
-
-          <button  className = 'button-2'type="submit">Add URL</button>
-        </form>
-      </div>
+      <button onClick={handleAddUrl} className='button-2 text-center justify-center items-center flex m-auto ' >
+        {addUrl ? 'Hide Form' : 'Add Url'}
+      </button>
+      {addUrl && <Form addURL={addURL} /> }
+      {addUrl && <List deleteURL={deleteURL} tabs={tabs}/> }
+      
 
 
       
-      <ul className='list-disc font-mono' >
-        {tabs.map((tab) => (
-          <li className='text-sm font-bold mt-2' key={tab.id}>
-            {tab.url}
-            <button className='button-delete' onClick={() => deleteURL(tab.id)}>
-               DELETE
-            </button>
-            
-            
-          </li>
-
-        ))}
-      </ul>
 
     </>
   )
