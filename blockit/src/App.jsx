@@ -46,6 +46,12 @@ function App() {
 		chrome.storage.local.set({ blockedURLS: updatedTabs }, function () {
 			chrome.runtime.sendMessage({ action: "updateBlockedURLS" });
 		});
+
+		if (blocked) {
+			blockSites(true);
+		} else {
+			unblockSites(false);
+		}
 	}
 
 	const deleteURL = (id) => {
@@ -55,6 +61,12 @@ function App() {
 		chrome.storage.local.set({ blockedURLS: newTabs }, function () {
 			chrome.runtime.sendMessage({ action: "updateBlockedURLS" });
 		});
+
+		if (blocked) {
+			blockSites(true);
+		} else {
+			unblockSites(false);
+		}
 	};
 
 	const handleAddUrl = () => {

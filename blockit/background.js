@@ -6,8 +6,8 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	if (request.action === "toggleBlocking") {
-		blockPages = request.value; // Establecer el valor recibido (true/false)
-		updateBlockedURLS(); // Actualizar las URLs bloqueadas según el nuevo estado
+		blockPages = request.value;
+		updateBlockedURLS();
 	}
 });
 
@@ -40,6 +40,7 @@ async function updateBlockedURLS() {
 			removeRuleIds: existingRuleIds,
 			addRules: rules,
 		});
+		console.log(rules);
 	} catch (error) {
 		console.log(error);
 	}
