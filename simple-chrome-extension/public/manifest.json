@@ -20,7 +20,7 @@
         "<all_urls>"
     ],
     "background" :{
-        "service_worker" : "background-2.js"
+        "service_worker" : "background.js"
     },
     "web_accessible_resources": [
       {
