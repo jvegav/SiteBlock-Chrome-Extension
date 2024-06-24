@@ -1,6 +1,6 @@
 import React from "react";
 
-import blockit_logo from "/assets/logo_blockit.png";
+import blockit_logo from "../assets/icon-48.png";
 
 const Logo = () => {
 	return (
