@@ -1,11 +1,17 @@
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import blockit_logo from './assets/logo_blockit.png'
 import './App.css'
 import { useEffect, useState } from 'react';
+
+import useAlert from './hooks/useAlert';
+import Alert from './components/Alert';
 
 function App() {
  
   const [ tabs, setTabs] = useState([])
+
+  const {alert, showAlert, hideAlert} = useAlert();
+
+  const[newURL, setNewURL] =  useState("")
 
 
   useEffect(() => {
@@ -16,31 +22,23 @@ function App() {
     })
   },[])
 
-
-  const[newURL, setNewURL] =  useState("")
-
-
-
-
-
-  const blockSites = ()=> {
-    chrome.runtime.sendMessage({ action: "updateBlockedURLS" });
+  function blockSites (value) {
+    chrome.runtime.sendMessage({ action: "toggleBlocking",value });
+    showAlert({show:true, text: 'Sites Blocked', type: 'success'})
+    
+    setTimeout(()=>{
+      hideAlert();
+    },2000)
   }
 
-  const unblockSites = () => {
-    chrome.declarativeNetRequest.getDynamicRules((existingRules) => {
-      const existingRuleIds = existingRules.map(rule => rule.id);
-      chrome.declarativeNetRequest.updateDynamicRules({
-        removeRuleIds: existingRuleIds,
-        addRules: []
-      }, () => {
-        if (chrome.runtime.lastError) {
-          console.error("Error removing rules:", chrome.runtime.lastError);
-        } else {
-          console.log('All rules removed successfully');
-        }
-      });
-    });
+  function unblockSites (value) {
+    
+    chrome.runtime.sendMessage({ action: "toggleBlocking",value });
+    showAlert({show:true, text: 'Sites UnBlocked', type: 'success'})
+    
+    setTimeout(()=>{
+      hideAlert();
+    },2000)
   }
 
 
@@ -70,20 +68,22 @@ function App() {
   return (
     <>
       <div className='flex justify-center'>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+       
+        <img src={blockit_logo} className="logo blockit w-[150px] h-[150px]" alt="BlockIt logo" />
+        
       </div>
 
 
-      <h1>Vite + React</h1>
+      <h1 className='font-mono'>BlockIt</h1>
+
+      {alert.show && <Alert {...alert}/>}
 
 
-      <div className="card">
-        <button  id='myButton' className='button' onClick={blockSites}>
+      <div className="card pt-16">
+        <button  id='myButton' className='button' onClick={() => blockSites(true)}>
           Block Sites
         </button>
-        <button  id='myButton' className='button' onClick={unblockSites}>
+        <button  id='myButton' className='button ml-3' onClick={() => unblockSites(false)}>
           UnBlock Sites
         </button>
       </div>
@@ -91,9 +91,10 @@ function App() {
 
 
       <div className='pb-8'>
+        <p className='text-sm font-mono pb-3 justify-items-start'> Write the URL ('youtube.com')</p>
         <form id="blockForm" onSubmit={addURL}>
           <div className='pb-4'>
-            <input value={newURL} type="text" id="url" onChange={e => setNewURL(e.target.value)} required className='justify-center items-center text-center rounded-lg h-10 '/>
+            <input value={newURL} type="text" id="url" onChange={e => setNewURL(e.target.value)} placeholder='URL Here'required className='justify-center items-center text-center rounded-lg h-10 w-full '/>
           </div>
 
           <button  className = 'button-2'type="submit">Add URL</button>
@@ -102,13 +103,12 @@ function App() {
 
 
       
-      <ul id="blockedList" >
+      <ul className='list-disc font-mono' >
         {tabs.map((tab) => (
-          <li className='text-xl font-bold mt-2' key={tab.id}>
+          <li className='text-sm font-bold mt-2' key={tab.id}>
             {tab.url}
-            
             <button className='button-delete' onClick={() => deleteURL(tab.id)}>
-               Delete
+               DELETE
             </button>
             
             

@@ -32,7 +32,7 @@ body {
   display: flex;
   place-items: center;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 110vh;
 }
 
 h1 {
@@ -52,11 +52,12 @@ h1 {
   transition: border-color 0.25s;
 }
 .button-2:hover {
-  border-color: #646cff;
+  border-color: #232669;
 }
-.button-2:focus,
-.button-2:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+.button-2:active {
+  background-color: #050237ec;
+  box-shadow: 0 5px #121220;
+  transform: translateY(2px);
 }
 
 .button {
@@ -66,26 +67,27 @@ h1 {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #3c0b00;
+  background-color: #592920fd;
   cursor: pointer;
   transition: border-color 0.25s;
 }
 .button:hover {
-  border-color: #646cff;
+  border-color: #ff6464;
 }
-.button:focus,
-.button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+.button:active {
+  background-color: #77392efd;
+  box-shadow: 0 5px #201212;
+  transform: translateY(2px);
 }
 
 
 .button-delete {
   border-radius: 8px;
   border: 1px solid transparent;
-  height: 35px;
-  width: 57px;
-  font-size: 1rem;
-  font-weight: 500;
+  height: 25px;
+  width: 55px;
+  font-size: 0.8rem;
+  font-weight: 450;
   font-family: inherit;
   background: hsl(0, 100%, 40%, 0.1);
   border: 1px solid hsl(0, 100%, 40%);
@@ -97,12 +99,12 @@ h1 {
   justify-content: center;
 }
 .button-delete:hover {
-  border-color: #646cff;
+  border-color: #ff6464;
 }
-.button-delete:focus,
-.button-delete:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
+
+
+
+
 
 @media (prefers-color-scheme: light) {
   :root {
@@ -112,7 +114,5 @@ h1 {
   a:hover {
     color: #747bff;
   }
-  button {
-    background-color: #f9f9f9;
-  }
+  
 }
