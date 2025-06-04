@@ -8,6 +8,7 @@ import List from "./components/List";
 import Blocked from "./components/Blocked";
 
 function App() {
+	
 	const [tabs, setTabs] = useState([]);
 
 	const [blocked, setBlocked] = useState(false);
